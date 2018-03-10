@@ -6,7 +6,6 @@ from PIL import ImageColor
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
-import random
 from mpl_toolkits.mplot3d import Axes3D
 
 def down(x, pos):
@@ -16,7 +15,7 @@ all_random_array = []
 for i in range(0,31):
 	temp_row = []
 	for j in range(0,41):
-		temp_row.append( (random.randint(0,255), random.randint(0,255), random.randint(0,255)) )
+		temp_row.append( (np.random.randint(0,256,1,np.uint8), np.random.randint(0,256,1,np.uint8), np.random.randint(0,256,1,np.uint8)) )
 	all_random_array.append(temp_row)
 
 img = Image.new('RGB',(410,310), ImageColor.getrgb('#000000'))
@@ -41,33 +40,29 @@ ax1.title.set_position((0.5,1.06))
 
 cord_x = np.arange(0,41)
 cord_y = np.arange(0,31)
-mesh_x, mesh_y = np.meshgrid(cord_x, cord_y)
-x, y = mesh_x.ravel(), mesh_y.ravel()
+x, y = np.meshgrid(cord_x, cord_y)
+print(x.shape, y.shape)
+red_z_top = np.zeros((31,41), dtype=np.uint8)
+green_z_top = np.zeros((31,41), dtype=np.uint8)
+blue_z_top = np.zeros((31,41), dtype=np.uint8)
 
-red_z_top = np.zeros(1271, dtype=np.uint8)
-green_z_top = np.zeros(1271, dtype=np.uint8)
-blue_z_top = np.zeros(1271, dtype=np.uint8)
-it = 0
-while it<1271:
-	red_z_top[it]=all_random_array[y[it]][x[it]][0]
-	green_z_top[it]=all_random_array[y[it]][x[it]][1]
-	blue_z_top[it]=all_random_array[y[it]][x[it]][2]
-	it += 1
-z_bottom = np.zeros_like(red_z_top)
-
+for i_y in range(0,31):
+    for i_x in range(0,41):
+        red_z_top[i_y][i_x]=all_random_array[i_y][i_x][0]
+        green_z_top[i_y][i_x]=all_random_array[i_y][i_x][1]
+        blue_z_top[i_y][i_x]=all_random_array[i_y][i_x][2]
 fig2 = plt.figure(2)
-ax2 = fig2.add_subplot(111, projection='3d')
-ax2.bar3d(x, y, z_bottom, 1, 1, red_z_top, shade=True)
+ax2 = fig2.gca(projection='3d')
+ax2.plot_surface(x, y, red_z_top)
 ax2.set_title('red')
 
 fig3 = plt.figure(3)
-ax3 = fig3.add_subplot(111, projection='3d')
-ax3.bar3d(x, y, z_bottom, 1, 1, green_z_top, shade=True)
+ax3 = fig3.gca(projection='3d')
+ax3.plot_surface(x, y, green_z_top)
 ax3.set_title('green')
 
 fig4 = plt.figure(4)
-ax4 = fig4.add_subplot(111, projection='3d')
-ax4.bar3d(x, y, z_bottom, 1, 1, green_z_top, shade=True)
+ax4 = fig4.gca(projection='3d')
+ax4.plot_surface(x, y, green_z_top)
 ax4.set_title('blue')
-
 plt.show()
